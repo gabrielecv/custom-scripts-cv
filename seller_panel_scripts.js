@@ -41,7 +41,7 @@ if (window.location.href.indexOf("/index.php?p=signup") != -1){
  document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it" title="guide"><i class="fa fa-eye" aria-hidden="true"></i>GUIDE</a></li>';
 
 if (window.location.href.indexOf("/index.php?p=add_product&pid=") != -1){
- document.getElementById('page-heading').innerHTML += '<a href="index.php?p=add_product"><button type="button" class="pull-right mp-theme-background" style="padding: 5px 10px;border-radius: 3px;color: white;font-weight:600;">✚ AGGIUNGI NUOVO PRODOTTO</button></a>';
+ document.getElementById('page-heading').innerHTML += '<a href="index.php?p=add_product"><button type="button" class="pull-right mp-theme-background" style="padding: 15px 10px;border-radius: 50px;color: #2D2D2D;font-weight:600;border:none;">✚ AGGIUNGI NUOVO PRODOTTO</button></a>';
 }
 
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=2") != -1){
