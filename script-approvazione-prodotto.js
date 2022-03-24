@@ -1,5 +1,5 @@
 var dltimg = document.getElementsByClassName("confirm-del-img")[0];
-//dltimg.setAttribute("data-value","all");
+dltimg.setAttribute("data-value","all");
 document.getElementById("image_upload_div").innerHTML += "<div class='del_img_cstpos' id='del_img'></div>";
 document.getElementsByClassName("del_img_cstpos")[0].appendChild(dltimg);
 document.getElementById("add_new_images").onclick = function(){
