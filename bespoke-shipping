@@ -1,0 +1,710 @@
+/* This macro will be parsed as PHP code (see http://www.php.net)
+
+The calculateshipping function is called every time a shipping calculation request is made by Shopify.
+
+The function must return an array of available shipping options, otherwise no shipping options will be returned to your customers.
+*/
+function calculateshipping($DATA) {
+
+	/* do not edit above this line */
+
+	/*
+	NB: only select php functions are allowed. Use of anything else will return a syntax error when you try to save. Consult the user guide at http://www.parcelintelligence.com.au/cs/documentation for more information
+	Examples to get you started are available here: http://parcelintelligence.com.au/cs/documentation/examples/
+	To take advantage of our assisted setup option, please email hello@parcelintelligence.com.au with a detailed description of how you want your shipping rates setup for a quote.
+	*/
+
+	//this holds the rates that will be returned to your customer
+	$_RATES = array();
+	$DATA = enrichProductDetails($DATA);
+
+	/*
+	this is what $DATA looks like, you can use any of the info in $DATA to generate your shipping rate
+	use print_r($DATA); to see actual contents of the $DATA array in the logs.
+	Array
+	(
+		[origin] => Array
+			(
+				[country] => AU
+				[postal_code] => 3000
+				[province] => VIC
+				[city] => melbourne
+				[name] =>
+				[address1] => 1 main street
+				[address2] =>
+				[address3] =>
+				[phone] =>
+				[fax] =>
+				[address_type] =>
+				[company_name] =>
+			)
+
+		[destination] => Array
+			(
+				[country] => AU
+				[postal_code] => 2000
+				[province] => NSW
+				[city] =>
+				[name] =>
+				[address1] =>
+				[address2] =>
+				[address3] =>
+				[phone] =>
+				[fax] =>
+				[address_type] =>
+				[company_name] =>
+			)
+
+		[items] => Array
+			(
+				[0] => Array
+					(
+						[name] => product10
+						[sku] => SKUP00310
+						[quantity] => 1
+						[grams] => 1000
+						[price] => 300
+						[vendor] => PRODUCT
+						[requires_shipping] => 1
+						[taxable] => 1
+						[fulfillment_service] => manual
+						[product_id] => 128436738
+						[variant_id] => 290813760
+					)
+
+				[1] => Array
+					(
+						[name] => product11
+						[sku] => SKUP0011
+						[quantity] => 1
+						[grams] => 1100
+						[price] => 300
+						[vendor] => PRODUCT
+						[requires_shipping] => 1
+						[taxable] => 1
+						[fulfillment_service] => manual
+						[product_id] => 128436744
+						[variant_id] => 290813772
+					)
+
+			)
+
+		[currency] => AUD
+	)
+	*/
+	
+	
+    // "AT" Austria zone1
+    // "BE" Belgio zone1
+    // "DK" Danimarca zone1
+    // "DE" Germania zone1
+    // "LU" Lussemburgo zone1
+    // "NL" Paesi_Bassi zone1
+    // "GB" Regno_Unito zone2
+    // "FR" Francia zone2
+    // "MC" Monaco zone2
+    // "ES" Spagna zone2
+    // "FI" Finlandia zone3
+    // "IE" Irlanda zone3
+    // "MT" Malta zone3
+    // "PT" Portogallo zone3
+    // "SE" Svezia zone3
+    // "NO" Norvegia zone4
+    // "CH" Svizzera zone4
+
+	$zone1 = array ("AT","BE","DK","FI","IE","LU","MC","ES","NL","SE","PT");
+	$zone2 = array ("DE","FR");
+	$zone3 = array ("MT");
+	$zone4 = array ("GB");
+	
+	
+	$venditore_bufalotti = "Bufalotti Mozzarella Artigianale - Pignataro Maggiore";
+	$venditore_bimbosmart = "BimboSmart - Gussago";
+	$venditore_ferramentalombardi = "Ferramenta Lombardi - Lagonegro";
+	$venditore_tradeshop = "Trade Shop italia - Napoli";
+	$venditore_maxcasa = "Max Casa - Brugherio";
+	$venditore_proeon = "Proeon - San Benedetto del Tronto";
+	$venditore_bottegarisparmio = "La Bottega del Risparmio - Bari";
+	$venditore_smartdecohome = "Smartdecohome - Sesto San Giovanni";
+	$venditore_innovamy = "Innovamy.it - Milano";
+	$venditore_dogbauer = "Dog Bauer - Farra di Soligo";
+	$venditore_novilunio = "Novilunio - Sesto San Giovanni";
+	$venditore_lemmastore = "Lemma Store - Alatri";
+	$venditore_lookathome = "Look at Home il negozio Smart - Como";
+	$venditore_nelcuoredellasicilia = "Nel Cuore della Sicilia - Villarosa";
+	$venditore_nonsoloalimenti = "Non Solo Alimenti - Albano Lazialeeee";
+	$venditore_kondorama = "Kondorama - Martinsicuro";
+	$venditore_ferus = "Ferus - Montoro";
+
+	$country = strtoupper($DATA['destination']['country']);
+	
+	
+    $SpedizioneEsteraDisponibile = true;
+    $tagspedizioneGratuita = "Spedizione_wk_custom_field-Spedizione-Gratuita";
+    
+    $venditori = array();
+    $peso_per_venditore = array();
+    $prezzo_per_venditore = array();
+    $prodotti_per_venditore = array();
+    $condizioni_spedizione_per_venditore = array();
+    
+    if ($country <> "IT") {
+        $productsInCollection = getcollection(241103208617);
+    }
+
+    /*$prodottiNuoveCondizioniSpedizione = getcollection(269928857769);
+    $prodottiTradeShop = getcollection(272935485609);
+    $prodottiBimboSmart = getcollection(277054161065);
+    $prodottiFerramentaLombardi = getcollection(278598123689);*/
+
+    
+    //verifico tutti i venditori del carrello
+    foreach ($DATA['items'] as $i) {
+        $venditori[] = $i['vendor'];
+        if ($country <> "IT") {
+            if (in_array($i['product_id'],$productsInCollection)) {
+                //questo prodotto non è nella collezione non devo mostrare nessuna tariffa
+            } else {
+                $SpedizioneEsteraDisponibile = false;
+            }
+        }
+    }
+    
+    $venditori = array_unique($venditori); //venditori unici
+    print_r($venditori);
+    
+
+    //calcolo peso per ciascun venditore e lo metto nella posizione corretta
+    foreach ($DATA['items'] as $i) {
+        //cerco l'indice del venditore di questo prodotto
+        $key = array_search( $i['vendor'], $venditori);
+        
+        //aggiungo 1kg per prodotti con peso 0
+        if ($i['grams'] == 0) {
+            $i['grams'] = 1000; //in realtà sono chili
+        }
+        // calcolo il peso per ciascun venditore
+        if (isset($peso_per_venditore[$key])) {
+    		if (isset($i['tags']) && in_array($tagspedizioneGratuita,$i['tags']) && $country == "IT") {
+                //questo prodotto non vale ai fini del peso della spedizione
+    		} else {
+    		    $peso_per_venditore[$key] += $i['grams'] * $i['quantity'];
+    		}
+        } else {
+    		if (isset($i['tags']) && in_array($tagspedizioneGratuita,$i['tags']) && $country == "IT") {
+                $peso_per_venditore[$key] = 0; //spedizione 0kg determina spedizione gratuita
+    		} else {
+    		    $peso_per_venditore[$key] = $i['grams'] * $i['quantity'] + 350;//partiamo da +300grammi per l'incarto
+    		}
+        }
+        // calcolo prezzo per ciascun venditore
+        if (isset($prezzo_per_venditore[$key])) {
+		    $prezzo_per_venditore[$key] += $i['price'] * $i['quantity'];
+        } else {
+    		$prezzo_per_venditore[$key] = $i['price'] * $i['quantity'];//parto da 0
+        }
+        // calcolo prodotti per ciascun venditore
+        if (isset($prodotti_per_venditore[$key])) {
+		    $prodotti_per_venditore[$key] += $i['quantity'];
+        } else {
+    		$prodotti_per_venditore[$key] =  $i['quantity'];//parto da 0
+        }
+        print_r($prodotti_per_venditore[$key]);
+    }
+    print_r($peso_per_venditore);
+    print_r($prezzo_per_venditore);
+    print_r($condizioni_spedizione_per_venditore);
+
+    $tar_economy_domestic_tradeshop =  array(400,450,500,550,650,750,950,1150,1500,1850,3660,6100,9150,12200);
+    $tar_economy_domestic_bimbosmart = 690;
+    $tar_economy_domestic_bufalotti = 990;
+    $tar_economy_domestic_ferramentalombardi =  array(590,649,820,911,1030,2000,3000,6000,6000,8800,11805,14756,17707);
+    $tar_economy_domestic_maxcasa =  array(390,490,0);
+    $tar_economy_domestic_proeon = array (500,0);
+    $tar_economy_domestic_bottegarisparmio = array (590,420);
+    $tar_economy_domestic_smartdecohome = array (500,0);
+    $tar_economy_domestic_innovamy = array (500);
+    $tar_economy_domestic_dogbauer = array (700);
+    $tar_economy_domestic_novilunio = array (500,0);
+    $tar_economy_domestic_lemmastore = array (600,800);
+    $tar_economy_domestic_lookathome = array (700,0);
+    $tar_economy_domestic_nelcuoredellasicilia = array (599,0);
+    $tar_economy_domestic_kondorama = array (610,1040,1280,1525);
+    $tar_economy_domestic_ferus = array (590,650,970,1050,1120,1650,2100,4000,6000,8000,10000);
+    
+    $tar_economy_domestic =  array(0,290,519,835,1035,1305,2290,2490,2760,3745,3945,4215);
+    $tar_standard_domestic = array(0,549,669,985,1185,1455,2440,2640,2910,3895,4095,4365);
+    $tar_espressa_domestic = array(715,715,835,985,1185,1455,2640,2840,2910,4095,4295,4565);
+    
+    $tar_economy_domestic_new_sotto =  array(290,290,390,490,690,790,2120,5020,7920);
+    $tar_standard_domestic_new_sotto = array(310,380,490,590,790,890,2640,5640,8440);
+    $tar_espressa_domestic_new_sotto = array(350,480,580,690,890,990,3120,6120,8920);
+    
+    $tar_economy_domestic_new_sopra =  array(0,0,0,0,0,0,910,3290,5670);
+    $tar_standard_domestic_new_sopra = array(80,180,210,310,410,510,1210,3490,5870);
+    $tar_espressa_domestic_new_sopra = array(190,290,390,490,590,690,1420,3690,6070);    
+    
+    $tar_economy_domestic_new_fullprice =  array(590,720,720,1030,1230,1530,1830,1930,3860,5790,7720);
+    $tar_standard_domestic_new_fullprice = array(690,820,890,1130,1330,1630,1930,2030,4060,6090,8120);
+    $tar_espressa_domestic_new_fullprice = array(790,920,980,1230,1430,1730,2030,2130,4260,6390,8520);
+    
+    
+    
+    $tar_internazionale_standard_zona1 = array (1100,1100,1760,1760,1760,2090,2090,2090,2090);
+    $tar_internazionale_espressa_zona1 = array (2600,2600,2600,3490,3490,5200,5200,5200,5200);
+    
+    $tar_internazionale_standard_zona2 = array (1050,1050,1760,1760,1760,2050,2050,2050,2050);
+    $tar_internazionale_espressa_zona2 = array (2600,2600,2600,3490,3490,5200,5200,5200,5200);
+
+    $tar_internazionale_standard_zona3 = array (2080,2230,2390,2500,2730,2930,3070,3200,3350);
+    $tar_internazionale_espressa_zona3 = array (2600,2600,2600,3490,3490,5200,5200,5200,5200);
+    
+    $tar_internazionale_standard_zona4 = array (1930,2030,2130,2200,2360,2500,2600,2700,2800);
+    $tar_internazionale_espressa_zona4 = array (1930,2030,2130,2200,2360,2500,2600,2700,2800);
+
+    $tariffa_economy_domestic = 0;
+    $tariffa_standard_domestic = 0;
+    $tariffa_espressa_domestic = 0;
+    
+    $tariffa_standard_internazionale = 0;
+    $tariffa_espressa_internazionale = 0;
+
+    
+    $indiceBufalotti = array_search( $venditore_bufalotti, $venditori);
+    $indiceBimboSmart = array_search( $venditore_bimbosmart, $venditori);
+    $indiceFerramentaLombardi = array_search( $venditore_ferramentalombardi, $venditori);
+    $indiceTradeShop = array_search( $venditore_tradeshop, $venditori);
+    $indiceMaxCasa = array_search( $venditore_maxcasa, $venditori);
+    $indiceProeon = array_search( $venditore_proeon, $venditori);
+    $indiceBottegaRisparmio = array_search( $venditore_bottegarisparmio, $venditori);
+    $indice_SmartDecoHome = array_search( $venditore_smartdecohome, $venditori);
+    $indice_Innovamy = array_search( $venditore_innovamy, $venditori);
+    $indice_DogBauer = array_search( $venditore_dogbauer, $venditori);
+    $indice_Novilunio = array_search( $venditore_novilunio, $venditori);
+    $indice_LemmaStore = array_search( $venditore_lemmastore, $venditori);
+    $indice_LookAtHome = array_search( $venditore_lookathome, $venditori);
+    $indice_NelCuoreDellaSicilia = array_search( $venditore_nelcuoredellasicilia, $venditori);
+    $indice_NonSoloAlimenti = array_search( $venditore_nonsoloalimenti, $venditori);
+    $indice_Kondorama = array_search( $venditore_kondorama, $venditori);
+    $indice_Ferus = array_search( $venditore_ferus, $venditori);
+    
+
+    $stacco ="Indice Bufalotti:";
+    print_r($stacco);
+    print_r($indiceBufalotti);
+    if ($country == "IT") {
+        foreach ($peso_per_venditore as $indice_iterpeso=>$p) {
+            //trovo l'indice dell'array della spedizione
+            $p = $p/1000;
+            
+            if ($indice_iterpeso === $indiceBufalotti) {
+                        $text1 = "Sono nell'iter else di bufalotti";
+                        print_r($text1);
+                if ($prezzo_per_venditore[$indiceBufalotti] >= 4990){
+                    $text1 = "Sono nel prezzo maggiore";
+                    print_r($text1);
+                } else {
+                        $tariffa_economy_domestic += $tar_economy_domestic_bufalotti;
+                        $tariffa_standard_domestic += $tar_economy_domestic_bufalotti;
+                        $tariffa_espressa_domestic += $tar_economy_domestic_bufalotti;
+
+                }
+            } elseif ($indice_iterpeso === $indiceBimboSmart) {
+                        $text1 = "Sono nell'iter else di Bimbosmart";
+                        print_r($text1);
+                if ($prezzo_per_venditore[$indiceBimboSmart] >= 5900){
+                    $text1 = "Sono nel prezzo maggiore spedizione gratuita";
+                    print_r($text1);
+                } else {
+                        $tariffa_economy_domestic += $tar_economy_domestic_bimbosmart;
+                        $tariffa_standard_domestic += $tar_economy_domestic_bimbosmart;
+                        $tariffa_espressa_domestic += $tar_economy_domestic_bimbosmart;
+
+                }
+            } elseif ($indice_iterpeso === $indiceMaxCasa) {
+                        $text1 = "Sono nell'iter else di Max Casa";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indiceMaxCasa] >= 0 and $prezzo_per_venditore[$indiceMaxCasa] < 1991) { $indice = 0; }
+                elseif ($prezzo_per_venditore[$indiceMaxCasa] >= 1991 and $prezzo_per_venditore[$indiceMaxCasa] < 2991) { $indice = 1; }
+                elseif ($prezzo_per_venditore[$indiceMaxCasa] >= 2991) { $indice = 2; }
+                
+                if (isset($tar_economy_domestic_maxcasa[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_maxcasa[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_maxcasa[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_maxcasa[$indice];
+                }
+            } elseif ($indice_iterpeso === $indiceProeon) {
+                        $text1 = "Sono nell'iter else di Proeon";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indiceProeon] >= 0 and $prezzo_per_venditore[$indiceProeon] < 6001) { $indice = 0; }
+                else { $indice = 1; }
+                if (isset($tar_economy_domestic_proeon[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_proeon[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_proeon[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_proeon[$indice];
+                }
+            } elseif ($indice_iterpeso === $indiceBottegaRisparmio) {
+                        $text1 = "Sono nell'iter else di La bottega del risparmio";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indiceBottegaRisparmio] >= 0 and $prezzo_per_venditore[$indiceBottegaRisparmio] < 6001) { $indice = 0; }
+                else { $indice = 1; }
+
+                if ($prodotti_per_venditore[$indiceBottegaRisparmio] >= 2 ) { $incremento_per_item = ( $prodotti_per_venditore[$indiceBottegaRisparmio] - 1 ) * 100 ; }
+
+                print_r($incremento_per_item);
+                if (isset($tar_economy_domestic_bottegarisparmio[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_bottegarisparmio[$indice] + $incremento_per_item;
+                    $tariffa_standard_domestic += $tar_economy_domestic_bottegarisparmio[$indice] + $incremento_per_item;
+                    $tariffa_espressa_domestic += $tar_economy_domestic_bottegarisparmio[$indice] + $incremento_per_item;
+                }
+            } elseif ($indice_iterpeso === $indice_SmartDecoHome) {
+                        $text1 = "Sono nell'iter else di Smartdecohome";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indice_SmartDecoHome] >= 0 and $prezzo_per_venditore[$indice_SmartDecoHome] < 2990) { $indice = 0; }
+                else { $indice = 1; }
+                
+                if (isset($tar_economy_domestic_smartdecohome[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_smartdecohome[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_smartdecohome[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_smartdecohome[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_Novilunio) {
+                        $text1 = "Sono nell'iter else di Novilunio";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indice_Novilunio] >= 0 and $prezzo_per_venditore[$indice_Novilunio] < 4900) { $indice = 0; }
+                else { $indice = 1; }
+                
+                if (isset($tar_economy_domestic_novilunio[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_novilunio[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_novilunio[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_novilunio[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_Innovamy) {
+                $text1 = "Sono nell'iter else di Innovamy";
+                print_r($text1);
+                $indice = 0;
+                
+                if (isset($tar_economy_domestic_innovamy[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_innovamy[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_innovamy[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_innovamy[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_DogBauer) {
+                $text1 = "Sono nell'iter else di DogBauer";
+                print_r($text1);
+                $indice = 0;
+                
+                if (isset($tar_economy_domestic_dogbauer[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_dogbauer[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_dogbauer[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_dogbauer[$indice];
+                }
+            }  elseif ($indice_iterpeso === $indiceFerramentaLombardi) {
+                // per peso reale devo sottrarre a p 0.35
+                $p = $p - 0.35;
+                if ($p >= 0 and $p < 3) { $indice = 0; }
+                elseif ($p >= 3 and $p < 5) { $indice = 1; }
+                elseif ($p >= 5 and $p < 10) { $indice = 2; }
+                elseif ($p >= 10 and $p < 20) { $indice = 3; }
+                elseif ($p >= 20 and $p < 30) { $indice = 4; }
+                elseif ($p >= 30 and $p < 50) { $indice = 5; }
+                elseif ($p >= 50 and $p < 100) { $indice = 6; }
+                elseif ($p >= 100 and $p < 150) { $indice = 7; }
+                elseif ($p >= 150 and $p < 200) { $indice = 8; }
+                elseif ($p >= 200 and $p < 300) { $indice = 9; }
+                elseif ($p >= 300 and $p < 400) { $indice = 10; }
+                elseif ($p >= 400 and $p < 500) { $indice = 11; }
+                elseif ($p >= 500 and $p < 600) { $indice = 12; }
+                elseif ($p >=600) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if (isset($tar_economy_domestic_ferramentalombardi[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_ferramentalombardi[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_ferramentalombardi[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_ferramentalombardi[$indice];
+                }
+                
+            } elseif ($indice_iterpeso === $indiceTradeShop) {
+                // per peso reale devo sottrarre a p 0.35
+                $p = $p - 0.35;
+                if ($p >= 0 and $p < 0.5) { $indice = 0; }
+                elseif ($p >= 0.5 and $p < 1) { $indice = 1; }
+                elseif ($p >= 1 and $p < 1.5) { $indice = 2; }
+                elseif ($p >= 1.5 and $p < 3) { $indice = 3; }
+                elseif ($p >= 3 and $p < 5) { $indice = 4; }
+                elseif ($p >= 5 and $p < 7.5) { $indice = 5; }
+                elseif ($p >= 7.5 and $p < 10) { $indice = 6; }
+                elseif ($p >= 10 and $p < 15) { $indice = 7; }
+                elseif ($p >= 15 and $p < 20) { $indice = 8; }
+                elseif ($p >= 20 and $p < 50) { $indice = 9; }
+                elseif ($p >= 50 and $p < 100) { $indice = 10; }
+                elseif ($p >= 100 and $p < 250) { $indice = 11; }
+                elseif ($p >= 250 and $p < 500) { $indice = 12; }
+                elseif ($p >= 500 and $p < 1000) { $indice = 13; }
+                elseif ($p >=500) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if (isset($tar_economy_domestic_tradeshop[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_tradeshop[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_tradeshop[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_tradeshop[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_NonSoloAlimenti) {
+                // per peso reale devo sottrarre a p 0.35
+                if ($p >= 0 and $p < 2) { $indice = 0; }
+                elseif ($p >= 2 and $p < 3) { $indice = 1; }
+                elseif ($p >= 3 and $p < 5) { $indice = 2; }
+                elseif ($p >= 5 and $p < 10) { $indice = 3; }
+                elseif ($p >= 10 and $p < 15) { $indice = 4; }
+                elseif ($p >= 15 and $p < 20) { $indice = 5; }
+                elseif ($p >= 20 and $p < 25) { $indice = 6; }
+                elseif ($p >= 25 and $p < 30) { $indice = 7; }
+                elseif ($p >= 30 and $p < 60) { $indice = 8; }
+                elseif ($p >= 60 and $p < 90) { $indice = 9; }
+                elseif ($p >= 90 and $p < 120) { $indice = 10; }
+                elseif ($p >=120) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if (isset($tar_economy_domestic_new_fullprice[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_new_fullprice[$indice];
+                    $tariffa_standard_domestic += $tar_standard_domestic_new_fullprice[$indice];
+                    $tariffa_espressa_domestic += $tar_espressa_domestic_new_fullprice[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_Kondorama) {
+                // per peso reale devo sottrarre a p 0.35
+                if ($p >= 0 and $p < 3) { $indice = 0; }
+                elseif ($p >= 3 and $p < 10) { $indice = 1; }
+                elseif ($p >= 10 and $p < 20) { $indice = 2; }
+                elseif ($p >= 20 and $p < 30) { $indice = 3; }
+                elseif ($p >=30) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if (isset($tar_economy_domestic_kondorama[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_kondorama[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_kondorama[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_kondorama[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_LemmaStore) {
+                // per peso reale devo sottrarre a p 0.35
+                $p = $p - 0.35;
+                if ($p >= 0 and $p < 10) { $indice = 0; }
+                elseif ($p >=10) { 
+                    $indice = 1;
+                }
+                if (isset($tar_economy_domestic_lemmastore[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_lemmastore[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_lemmastore[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_lemmastore[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_LookAtHome) {
+                        $text1 = "Sono nell'iter else di LookAtHome";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indice_LookAtHome] >= 0 and $prezzo_per_venditore[$indice_LookAtHome] < 6000) { $indice = 0; }
+                elseif ($prezzo_per_venditore[$indice_LookAtHome] >= 6000) { $indice = 1; }
+
+                if (isset($tar_economy_domestic_lookathome[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_lookathome[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_lookathome[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_lookathome[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_NelCuoreDellaSicilia) {
+                        $text1 = "Sono nell'iter else di Nel Cuore della sicilia";
+                        print_r($text1);
+                        
+                if ($prezzo_per_venditore[$indice_NelCuoreDellaSicilia] >= 0 and $prezzo_per_venditore[$indice_NelCuoreDellaSicilia] < 9900) { $indice = 0; }
+                elseif ($prezzo_per_venditore[$indice_NelCuoreDellaSicilia] >= 9900) { $indice = 1; }
+
+                if (isset($tar_economy_domestic_nelcuoredellasicilia[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_nelcuoredellasicilia[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_nelcuoredellasicilia[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_nelcuoredellasicilia[$indice];
+                }
+            } else {
+                
+                $text1 = "Non sono in un iter personalizzato";
+                print_r($text1);
+                if ($p >= 0 and $p < 1) { $indice = 0; }
+                elseif ($p >= 1 and $p < 3) { $indice = 1; }
+                elseif ($p >= 3 and $p < 5) { $indice = 2; }
+                elseif ($p >= 5 and $p < 10) { $indice = 3; }
+                elseif ($p >= 10 and $p < 20) { $indice = 4; }
+                elseif ($p >= 20 and $p < 30) { $indice = 5; }
+                elseif ($p >= 30 and $p < 60) { $indice = 6; }
+                elseif ($p >= 60 and $p < 90) { $indice = 7; }
+                elseif ($p >= 90 and $p < 120) { $indice = 8; }
+                elseif ($p >=120) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+
+                if ($prezzo_per_venditore[$indice_iterpeso] >= 3500 || $p == 0 ) {
+                    if (isset($tar_economy_domestic_new_sopra[$indice])) {
+                        $tariffa_economy_domestic += $tar_economy_domestic_new_sopra[$indice];
+                    }
+                    if (isset($tar_standard_domestic[$indice])) {
+                        $tariffa_standard_domestic += $tar_standard_domestic_new_sopra[$indice];
+                    }
+                    if (isset($tar_espressa_domestic[$indice])) {
+                        $tariffa_espressa_domestic += $tar_espressa_domestic_new_sopra[$indice];
+                    }
+                } else {
+                    if (isset($tar_economy_domestic_new_sotto[$indice])) {
+                        $tariffa_economy_domestic += $tar_economy_domestic_new_sotto[$indice];
+                    }
+                    if (isset($tar_standard_domestic[$indice])) {
+                        $tariffa_standard_domestic += $tar_standard_domestic_new_sotto[$indice];
+                    }
+                    if (isset($tar_espressa_domestic[$indice])) {
+                        $tariffa_espressa_domestic += $tar_espressa_domestic_new_sotto[$indice];
+                    }
+                }
+            }
+        }
+    } else {
+        /*if (in_array($country,$zone1)) {
+            $tariffa_standard_internazionale_current = $tar_internazionale_standard_zona1;
+            $tariffa_internazionale_espressa_current = $tar_internazionale_espressa_zona1;
+        } elseif (in_array($country,$zone2)) {
+            $tariffa_standard_internazionale_current = $tar_internazionale_standard_zona2;
+            $tariffa_internazionale_espressa_current = $tar_internazionale_espressa_zona2;
+        } elseif (in_array($country,$zone3)) {
+            $tariffa_standard_internazionale_current = $tar_internazionale_standard_zona3;
+            $tariffa_internazionale_espressa_current = $tar_internazionale_espressa_zona3;
+        } elseif (in_array($country,$zone4)) {
+            $tariffa_standard_internazionale_current = $tar_internazionale_standard_zona4;
+            $tariffa_internazionale_espressa_current = $tar_internazionale_espressa_zona4;
+        } else {
+            $SpedizioneEsteraDisponibile = false;
+        }*/
+        $SpedizioneEsteraDisponibile = false;
+        foreach ($peso_per_venditore as $p) {
+            //trovo l'indice dell'array della spedizione
+            $p = floor($p/1000);
+            
+            if ($p > 9) { 
+                $tariffa_standard_internazionale = false;
+                $tariffa_espressa_internazionale = false;
+                break; 
+            } else {
+                $indice = $p;
+            }
+            
+            if (isset($tariffa_standard_internazionale_current[$indice])) {
+                $tariffa_standard_internazionale += $tariffa_standard_internazionale_current[$indice];
+            }
+            if (isset($tariffa_internazionale_espressa_current[$indice])) {
+                $tariffa_espressa_internazionale += $tariffa_internazionale_espressa_current[$indice];
+            }
+        }
+        
+    }
+    
+    date_default_timezone_set('Europe/Rome');
+    $myDate = date("d-m-Y");
+
+    $description_economy_domestic = "Consegna entro il " . date('d/m', strtotime($myDate . ' +6 Weekday'));
+    $description_standard_domestic = "Consegna entro il " . date('d/m', strtotime($myDate . ' +4 Weekday'));
+    $description_express_domestic = "Consegna entro il " . date('d/m', strtotime($myDate . ' +2 Weekday'));
+ 
+    if ( $indiceBufalotti and count($venditori)>1) {
+       
+        $text1 = "Più venditori di cui 1 bufalotti";
+        print_r($text1);
+        $description_economy_domestic = "I prodotti di Bufalotti saranno spediti comunque con spedizione Express";
+        $description_standard_domestic = "I prodotti di Bufalotti saranno spediti comunque con spedizione Express";
+        
+    } else if ( $venditori[0] == $venditore_bufalotti and count($venditori) == 1 ) {
+    
+        $text1 = "Solo 1 venditore Bufalotti";
+        print_r($text1);
+        $tariffa_economy_domestic = false;
+        $tariffa_standard_domestic = false;
+    }
+
+    print_r($tariffa_economy_domestic);
+    
+    if ($country == "IT") {
+    	//la condizione  if ($tariffa_economy_domestic <> false) mi dice se c'è una tariffa per la spedizione
+    	if ($tariffa_economy_domestic == $tariffa_standard_domestic) {
+    	    $tariffa_economy_domestic = false;
+    	}
+    	if ($tariffa_standard_domestic == $tariffa_espressa_domestic) {
+    	    $tariffa_standard_domestic = false;
+    	}
+    	
+    	if ($tariffa_economy_domestic !== false) {
+        	$_RATES[] = array(
+        		"service_name" => "Spedizione Economy (5 - 6 gg)",
+        		"service_code" => "DOMESTIC_ECONOMY",
+        		"total_price" => $tariffa_economy_domestic,
+        		"currency" => "EUR",
+        		"description" => $description_economy_domestic
+        	);
+    	}
+    	if ($tariffa_standard_domestic !== false) {
+        	$_RATES[] = array(
+        		"service_name" => "Spedizione Standard (3 - 4 gg)",
+        		"service_code" => "DOMESTIC_STANDARD",
+        		"total_price" => $tariffa_standard_domestic,
+        		"currency" => "EUR",
+        		"description" => $description_standard_domestic
+        	);
+    	}
+    	if ($tariffa_espressa_domestic !== false) {
+        	$_RATES[] = array(
+        		"service_name" => "Spedizione Espressa (1 - 2 gg)",
+        		"service_code" => "DOMESTIC_EXPRESS",
+        		"total_price" => $tariffa_espressa_domestic,
+        		"currency" => "EUR",
+        		"description" => $description_express_domestic
+        	);
+    	}
+    }
+	
+	// TARIFFE INTERNAZIONALI
+	if ($SpedizioneEsteraDisponibile and $country <> "IT") {
+        if ($tariffa_standard_internazionale !== false) {
+            $_RATES[] = array(
+            	"service_name" => "Standard International Shipping (4-5 days)",
+            	"service_code" => "INTERNAZIONALE_STANDARD",
+            	"total_price" => $tariffa_standard_internazionale,
+            	"currency" => "EUR",
+            	"description" => "Standard International shipping up to 5 working days"
+            );
+        }
+        if ($tariffa_espressa_internazionale !== false and $country <> "GB") {
+            $_RATES[] = array(
+            	"service_name" => "Express International Shipping (1-2 days)",
+            	"service_code" => "INTERNAZIONALE_ESPRESSA",
+            	"total_price" => $tariffa_espressa_internazionale,
+            	"currency" => "EUR",
+            	"description" => "Express shipping with 48h transit time"
+            );
+        }
+	}
+
+	return $_RATES;
+
+	/* do not edit below this line */
+
+}
