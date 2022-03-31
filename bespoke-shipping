@@ -501,6 +501,31 @@ function calculateshipping($DATA) {
                     $tariffa_standard_domestic += $tar_economy_domestic_kondorama[$indice];
                     $tariffa_espressa_domestic += $tar_economy_domestic_kondorama[$indice];
                 }
+            } elseif ($indice_iterpeso === $indice_Ferus) {
+                // per peso reale devo sottrarre a p 0.35
+                if ($p >= 0 and $p < 2) { $indice = 0; }
+                elseif ($p >= 2 and $p < 5) { $indice = 1; }
+                elseif ($p >= 5 and $p < 10) { $indice = 2; }
+                elseif ($p >= 10 and $p < 20) { $indice = 3; }
+                elseif ($p >= 20 and $p < 30) { $indice = 4; }
+                elseif ($p >= 30 and $p < 50) { $indice = 5; }
+                elseif ($p >= 50 and $p < 100) { $indice = 6; }
+                elseif ($p >= 100 and $p < 200) { $indice = 7; }
+                elseif ($p >= 200 and $p < 300) { $indice = 8; }
+                elseif ($p >= 300 and $p < 400) { $indice = 9; }
+                elseif ($p >= 400 and $p < 500) { $indice = 10; }
+                elseif ($p >= 500 and $p < 600) { $indice = 11; }
+                elseif ($p >=600) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if (isset($tar_economy_domestic_ferus[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_ferus[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_ferus[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_ferus[$indice];
+                }
             } elseif ($indice_iterpeso === $indice_LemmaStore) {
                 // per peso reale devo sottrarre a p 0.35
                 $p = $p - 0.35;
