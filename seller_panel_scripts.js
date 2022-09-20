@@ -16,6 +16,10 @@ if (document.getElementById('store_name') !== null) {
   document.getElementById('store_name').style.cursor= "not-allowed";
 }
 
+if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
+  document.getElementsByClassName("mp-margin-top-50")[0].classList.add("membership-plans-container");
+}
+
 if (window.location.href.indexOf("/index.php?p=login") != -1){
   document.getElementById('header').classList.add("margin-top-85");
   document.getElementById('customized_icon').classList = ("hidden");
@@ -153,8 +157,4 @@ if (contatore_lunghezzacaratteri > 150){
 }
 function tolowecase(e){
   e.value = e.value.charAt(0).toUpperCase() + e.value.slice(1).toLowerCase();
-}
-if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
-  document.getElementsByClassName("mp-margin-top-50")[0].classList.add("membership-plans-container");
-}
-}
+}}
