@@ -65,8 +65,12 @@ if (window.location.href.indexOf("/index.php?p=product") != -1){
       var opt = document.createElement('option');
       opt.value = "500";
       opt.innerHTML = "500";
+      var opt2 = document.createElement('option');
+      opt2.value = "5000";
+      opt2.innerHTML = "5000";
       if ( aggiunto  == false ) {
         select.appendChild(opt);
+        select.appendChild(opt2);
         aggiunto=true;
       }
     }
@@ -149,4 +153,8 @@ if (contatore_lunghezzacaratteri > 150){
 }
 function tolowecase(e){
   e.value = e.value.charAt(0).toUpperCase() + e.value.slice(1).toLowerCase();
-}}
+}
+if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
+  document.getElementsByClassName("mp-margin-top-50")[0].classList.add("membership-plans-container");
+}
+}
