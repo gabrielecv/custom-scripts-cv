@@ -1,8 +1,9 @@
 if (document.getElementById('profile-btn')) {
   var storelink = document.getElementById('profile-btn');
   var venditore = storelink.href.split("/").pop();
+  var venditore = "VENDITORE-" + venditore;
 } else { 
-  var venditore = "Non-loggato";
+  var venditore = "VENDITORE-Non-loggato";
 }
 document.tidioIdentify = {
   name: venditore 
