@@ -44,22 +44,22 @@ if (window.location.href.indexOf("/index.php?p=signup") != -1){
   document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
 }
  document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it" title="guide"><i class="fa fa-eye" aria-hidden="true"></i>GUIDE</a></li>';
-
+document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="tel:+390287176931" title="guide"><i class="fa fa-eye" aria-hidden="true"></i>+39 02 8717 6931</a></li>';
 if (window.location.href.indexOf("/index.php?p=add_product&pid=") != -1){
  document.getElementById('page-heading').innerHTML += '<a href="index.php?p=add_product"><button type="button" class="pull-right mp-theme-background" style="padding: 15px 10px;border-radius: 50px;color: #2D2D2D;font-weight:600;border:none;">✚ AGGIUNGI NUOVO PRODOTTO</button></a>';
 }
 
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=2") != -1){
- document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-woocommerce-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a>";
+ document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-woocommerce-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a> <span> oppure chiamaci al +39 02 8717 6931</span>";
 }
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=1") != -1){
- document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-shopify-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a>";
+ document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-shopify-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a> <span> oppure chiamaci al +39 02 8717 6931</span>";
 }
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=5") != -1){
- document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-prestashop-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a>";
+ document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-prestashop-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a> <span> oppure chiamaci al +39 02 8717 6931</span>";
 }
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=4") != -1){
- document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-magento-2-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a>";
+ document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-integrare-magento-2-al-marketplace-commerciovirtuoso-it' target='_blank'>Leggi la Guida di integrazione --></a> <span> oppure chiamaci al +39 02 8717 6931</span>";
 }
 if (window.location.href.indexOf("/index.php?p=product") != -1){
   var aggiunto = false;
