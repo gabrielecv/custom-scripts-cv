@@ -47,7 +47,7 @@ if (window.location.href.indexOf("/index.php?p=signup") != -1){
 document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/domande-frequenti/" title="domande frequenti"><i class="fa fa-question-circle" aria-hidden="true"></i>Domande frequenti</a></li>';
  document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="tel:+390287176931" title="chiama"><i class="fa fa-phone" aria-hidden="true"></i>+39 02 8717 6931</a></li>';
 if (window.location.href.indexOf("/index.php?p=add_product&pid=") != -1){
- document.getElementById('page-heading').innerHTML += '<a href="index.php?p=add_product"><button type="button" class="pull-right mp-theme-background" style="padding: 15px 10px;border-radius: 10px;color: #333333;font-weight:600;border:none;">✚ AGGIUNGI NUOVO PRODOTTO</button></a>';
+ document.getElementById('page-heading').innerHTML += '<a href="index.php?p=add_product"><button type="button" class="pull-right mp-theme-background" style="padding: 15px 10px;border-radius: 10px;color: #333333;font-weight:600;border:none;">✚ Aggiungi nuovo prodotto</button></a>';
 }
 
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=2") != -1){
@@ -88,7 +88,7 @@ if (window.location.href.indexOf("/index.php?p=add_product") != -1){
 document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[2].getElementsByTagName('label')[0].innerHTML = "CAMPI DA RIEMPIRE SE SI VUOLE EVIDENZIARE IL PREZZO UNITARIO<br>Unità di misura della quantità di prodotto Chilo/Litro/ Singole unità... - SELEZIONARE CT SE L'UNITA DI MISURA E' la Singola unità";
 document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[3].getElementsByTagName('label')[0].innerHTML = "Quantita' di prodotto inclusa nell'inserzione";
 var fieldtitle = document.querySelectorAll("[id='product_name_div']");
-var contacaratteri='<div style="margin-top:10px;">Conteggio caratteri: <span id="conteggiocaratterititolo">0<\/span>\/200 - <span id="suggerimentolunghezzatitolo" style="color:red">Titolo Troppo Breve!<\/span>          <a href="https://commerciovirtuoso.it/blogs/guide-per-vendere-su-commerciovirtuoso-it/come-scrivere-il-nome-perfetto-per-il-tuo-prodotto" target="_blank">Guida: scrivere il titolo perfetto </a><\/div>';
+var contacaratteri='<div style="margin-top:10px;">Conteggio caratteri: <span id="conteggiocaratterititolo">0<\/span>\/200 - <span id="suggerimentolunghezzatitolo" style="color:red">Titolo Troppo Breve!<\/span>          <a href="https://sell.commerciovirtuoso.it/come-scrivere-il-nome-perfetto-per-il-tuo-prodotto/" target="_blank">Guida: scrivere il titolo perfetto </a><\/div>';
 fieldtitle[3].innerHTML+=contacaratteri;
 
 if (document.getElementById('mvm_prod_type_div') !== null) {
