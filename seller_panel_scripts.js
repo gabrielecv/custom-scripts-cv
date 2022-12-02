@@ -26,7 +26,7 @@ if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
   document.getElementsByClassName("mp-margin-top-50")[0].classList.add("membership-plans-container");
 }
 
-if (window.location.href.indexOf("/index.php?p=login") != -1){
+/*if (window.location.href.indexOf("/index.php?p=login") != -1){
   document.getElementById('header').classList.add("margin-top-85");
   document.getElementById('customized_icon').classList = ("hidden");
   var content_wrapp = document.getElementById('login-template');
@@ -40,7 +40,7 @@ if (window.location.href.indexOf("/index.php?p=login") != -1){
   document.getElementById('login_form_div').classList.remove("card");
   document.getElementsByClassName("footer")[0].classList = ("footer text-left hidden");
   document.getElementById('login_form_div').getElementsByTagName("h4")[0].classList.remove("mp-margin-top-50")
-}
+}*/
 if (window.location.href.indexOf("/index.php?p=signup") != -1){
   document.getElementById('header').classList.add("margin-top-85");
   document.getElementById('customized_icon').classList = ("hidden");
