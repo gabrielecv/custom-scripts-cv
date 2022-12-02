@@ -40,14 +40,14 @@ if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
   document.getElementById('login_form_div').classList.remove("card");
   document.getElementsByClassName("footer")[0].classList = ("footer text-left hidden");
   document.getElementById('login_form_div').getElementsByTagName("h4")[0].classList.remove("mp-margin-top-50")
-}*/
+}
 if (window.location.href.indexOf("/index.php?p=signup") != -1){
   document.getElementById('header').classList.add("margin-top-85");
   document.getElementById('customized_icon').classList = ("hidden");
   document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
   document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
   document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
-}
+}*/
  document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/category/guide/" title="guide"><i class="fa fa-book" aria-hidden="true"></i>Guide</a></li>';
 document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/domande-frequenti/" title="domande frequenti"><i class="fa fa-question-circle" aria-hidden="true"></i>Domande frequenti</a></li>';
  document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="tel:+390287176931" title="chiama"><i class="fa fa-phone" aria-hidden="true"></i>+39 02 8717 6931</a></li>';
