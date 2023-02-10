@@ -67,7 +67,7 @@ if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=5")
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=4") != -1){
  document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://sell.commerciovirtuoso.it/come-integrare-magento-2-al-marketplace-commerciovirtuoso-it/' target='_blank'>Leggi la Guida di integrazione --></a> <span> oppure chiamaci al +39 02 8717 6931</span>";
 }
-if (window.location.href.indexOf("/index.php?p=product") != -1){
+/*if (window.location.href.indexOf("/index.php?p=product") != -1){
   var aggiunto = false;
   $("#seller_side_product_table").bind("DOMSubtreeModified", function() {
     if (document.getElementById('seller_side_product_table_length') !== null) {
@@ -87,7 +87,7 @@ if (window.location.href.indexOf("/index.php?p=product") != -1){
     }
   });
 
-}
+}*/
 
 if (window.location.href.indexOf("/index.php?p=add_product") != -1){
 document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[2].getElementsByTagName('label')[0].innerHTML = "CAMPI DA RIEMPIRE SE SI VUOLE EVIDENZIARE IL PREZZO UNITARIO<br>Unità di misura della quantità di prodotto Chilo/Litro/ Singole unità... - SELEZIONARE CT SE L'UNITA DI MISURA E' la Singola unità";
