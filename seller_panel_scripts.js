@@ -88,7 +88,40 @@ if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=4")
   });
 
 }*/
+if (window.location.href.indexOf("index.php?p=my_account") != -1){
 
+  var custom_script_1 = document.createElement("script");
+
+  custom_script_1.src = "https://apis.google.com/js/platform.js?onload=renderOptIn";
+  document.head.appendChild(custom_script_1);
+
+  var block_email_seller =  document.getElementsByClassName("form-group row mp-margin-top-20")[3];
+  var block_div_email_seller = block_email_seller.getElementsByTagName("div")[0];
+  var block_div_input = block_div_email_seller.getElementsByTagName("input")[0];
+  var email_seller = block_div_input.value;
+  var id_seller = document.getElementById("seller_id").value;
+  var order_number = "SELLER-" + id_seller;
+  var tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  var tomorrowString = tomorrow.toISOString().substring(0, 10);
+  console.log(email_seller , "-", order_number,"-",tomorrowString);
+
+  window.renderOptIn = function() {
+    window.gapi.load('surveyoptin', function() {
+      window.gapi.surveyoptin.render(
+        {
+          "merchant_id": 114505364,
+          "order_id": id_seller ,
+          "email": email_seller ,
+          "delivery_country": "IT",
+          "estimated_delivery_date": tomorrowString,
+        });
+    });
+  }
+  window.___gcfg = {
+    lang: 'it_IT'
+  };
+}
 if (window.location.href.indexOf("/index.php?p=add_product") != -1){
 document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[2].getElementsByTagName('label')[0].innerHTML = "CAMPI DA RIEMPIRE SE SI VUOLE EVIDENZIARE IL PREZZO UNITARIO<br>Unità di misura della quantità di prodotto Chilo/Litro/ Singole unità... - SELEZIONARE CT SE L'UNITA DI MISURA E' la Singola unità";
 document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[3].getElementsByTagName('label')[0].innerHTML = "Quantita' di prodotto inclusa nell'inserzione";
