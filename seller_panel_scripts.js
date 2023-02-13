@@ -89,7 +89,21 @@ if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=4")
 
 }*/
 if (window.location.href.indexOf("index.php?p=my_account") != -1){
+  var link_to_shop = document.getElementById("profile-btn").href.replace("https://commerciovirtuoso.myshopify.com","https://commerciovirtuoso.it");
+  console.log(link_to_shop );
+  var sideprofile = document.getElementById("seller-profile");
 
+  var shoplink  = `
+  <div class="add_card card" id="profile-image-div">
+    <h4>Url del tuo negozio</h4>
+    <p>Ecco l'url del tuo negozio: puoi incollarlo sulla tua pagina Facebook e sul tuo sito vetrina.</p>
+    <p style="margin:20px 0;"><pre>{{ replaceurl }}</pre></p>
+    <p style="margin:20px 0;">Oppure copia questo codice html in qualsiasi parte del tuo sito per mostrare un pulsante al tuo shop</p>
+    <p style="margin:20px 0;"><pre>&lt;a href="{{ replaceurl }}" style="padding:10px; background:black;color:white;border-radius:5px;display:block;"&gt;Visita il mio shop online&lt;/a&gt;</pre></p>
+  </div>`;
+  var shoplink = shoplink .replaceAll("{{ replaceurl }}",link_to_shop );
+  sideprofile.insertAdjacentHTML("afterbegin", shoplink);
+  
   var custom_script_1 = document.createElement("script");
 
   custom_script_1.src = "https://apis.google.com/js/platform.js?onload=renderOptIn";
