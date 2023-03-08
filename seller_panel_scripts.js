@@ -5,12 +5,13 @@ if (document.getElementById('profile-btn')) {
 } else { 
   var venditore = "VENDITORE-Non-loggato";
 }
-document.tidioIdentify = {
+/*document.tidioIdentify = {
   name: venditore 
-};
-var tidioScript = document.createElement('script');
-tidioScript.src = '//code.tidio.co/cy97akcfmtocrapn5plbm9d2bdvizjd7.js';
-document.body.appendChild(tidioScript);
+};*/
+var chatScript = document.createElement('script');
+chatScript.src = 'https://static.zdassets.com/ekr/snippet.js?key=8de440a1-1c65-4b81-867c-3f024c4851b3';
+chatScript.id = 'ze-snippet';
+document.body.appendChild(chatScript);
 
 var PoppinsFont = document.createElement('link');
 PoppinsFont.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap';
