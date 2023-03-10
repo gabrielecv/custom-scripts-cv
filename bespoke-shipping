@@ -117,6 +117,23 @@ function calculateshipping($DATA) {
 	$zone3 = array ("MT");
 	$zone4 = array ("GB");
 	
+	$provincia_destinazione = strtoupper($DATA['destination']['province']);
+	
+	$regione_sicilia = array ("AG","CL","CT","EN","ME","PA","RG","SR","TP");
+	$regione_campania = array ("AV","BN","CE","NA","SA");
+	$regione_sardegna = array ("CA","CI","NU","OT","OR","VS","SS","OG","SU");
+	
+	if ( in_array( $provincia_destinazione ,$regione_sicilia ) ) {
+	    $regione_destinazione = "SICILIA";
+	} elseif ( in_array( $provincia_destinazione ,$regione_campania ) ) {
+	    $regione_destinazione = "CAMPANIA";
+	} elseif ( in_array( $provincia_destinazione ,$regione_sardegna ) ) {
+	    $regione_destinazione = "SARDEGNA";
+	} else {
+	    $regione_destinazione = "ALTRO";
+	}
+	print_r($regione_destinazione);
+	
 	
 	$venditore_bufalotti = "Bufalotti Mozzarella Artigianale - Pignataro Maggiore";
 	$venditore_bimbosmart = "BimboSmart - Gussago";
@@ -132,9 +149,23 @@ function calculateshipping($DATA) {
 	$venditore_lemmastore = "Lemma Store - Alatri";
 	$venditore_lookathome = "Look at Home il negozio Smart - Como";
 	$venditore_nelcuoredellasicilia = "Nel Cuore della Sicilia - Villarosa";
-	$venditore_nonsoloalimenti = "Non Solo Alimenti - Albano Lazialeeee";
+	$venditore_nonsoloalimenti = "Franco Pausa Caffè - Albano Laziale";
+	$venditore_tipiciefood = "Tipici & Food - Bronte";
 	$venditore_kondorama = "Kondorama - Martinsicuro";
 	$venditore_ferus = "Ferus - Montoro";
+	$venditore_pagnottaesalute = "Pagnotta è Salute - Milazzo";
+	$venditore_shopbagno = "Shopbagno.it - Roma";
+	$venditore_agbon = "Agbon - Martinsicuro";
+	$venditore_isbtrading = "Isbtrading - Castel Volturno";
+	$venditore_cicliferrareis = "Cicli Ferrareis - Cerignola";
+	$venditore_eurocartuccia = "Eurocartuccia - Pavullo";
+	$venditore_magiedinatale = "MagiediNatale.it - Altamura";
+	$venditore_cartoniuova = "Cartoniuova.it - Offida";
+	$venditore_theshrimpbay = "Theshrimpbay.com - Leffe";
+	$venditore_eternalparquet = "Eternal Parquet - Ariano Irpino";
+	$venditore_decorspace = "Decor Space - Altamura";
+	$venditore_lazappa = "La Zappa - Altamura";
+	$venditore_lacasadelbebe = "La Casa Del Bebè - Napoli";
 
 	$country = strtoupper($DATA['destination']['country']);
 	
@@ -146,13 +177,14 @@ function calculateshipping($DATA) {
     $peso_per_venditore = array();
     $prezzo_per_venditore = array();
     $prodotti_per_venditore = array();
+    $tagspeciali_per_venditore = array();
     $condizioni_spedizione_per_venditore = array();
     
-    if ($country <> "IT") {
+    /*if ($country <> "IT") {
         $productsInCollection = getcollection(241103208617);
     }
 
-    /*$prodottiNuoveCondizioniSpedizione = getcollection(269928857769);
+    $prodottiNuoveCondizioniSpedizione = getcollection(269928857769);
     $prodottiTradeShop = getcollection(272935485609);
     $prodottiBimboSmart = getcollection(277054161065);
     $prodottiFerramentaLombardi = getcollection(278598123689);*/
@@ -161,13 +193,6 @@ function calculateshipping($DATA) {
     //verifico tutti i venditori del carrello
     foreach ($DATA['items'] as $i) {
         $venditori[] = $i['vendor'];
-        if ($country <> "IT") {
-            if (in_array($i['product_id'],$productsInCollection)) {
-                //questo prodotto non è nella collezione non devo mostrare nessuna tariffa
-            } else {
-                $SpedizioneEsteraDisponibile = false;
-            }
-        }
     }
     
     $venditori = array_unique($venditori); //venditori unici
@@ -209,11 +234,21 @@ function calculateshipping($DATA) {
         } else {
     		$prodotti_per_venditore[$key] =  $i['quantity'];//parto da 0
         }
-        print_r($prodotti_per_venditore[$key]);
+        
+        // aggiungo tag prodotto speciale per venditore
+        if ($i['vendor']  == $venditore_eternalparquet) {
+            if (isset($i['tags']) && in_array('battiscopa prezzo al metro lineare',$i['tags'])) {
+	    	    $tagspeciali_per_venditore[$key] =  "spedizione_metro_lineare";// aggiungo tag speciale
+	    	    $peso_per_venditore[$key] -= $i['grams'] * $i['quantity'];
+            } elseif ( $i['type'] == "Fai da te/Prodotti per la costruzione/Materiali da costruzione/Pavimenti/Materiali per pavimenti/Battiscopa" || in_array('free-shipping',$i['tags'])){
+                $peso_per_venditore[$key] -= $i['grams'] * $i['quantity'];
+            }
+        }
+
     }
     print_r($peso_per_venditore);
     print_r($prezzo_per_venditore);
-    print_r($condizioni_spedizione_per_venditore);
+
 
     $tar_economy_domestic_tradeshop =  array(400,450,500,550,650,750,950,1150,1500,1850,3660,6100,9150,12200);
     $tar_economy_domestic_bimbosmart = 690;
@@ -230,7 +265,22 @@ function calculateshipping($DATA) {
     $tar_economy_domestic_lookathome = array (700,0);
     $tar_economy_domestic_nelcuoredellasicilia = array (599,0);
     $tar_economy_domestic_kondorama = array (610,1040,1280,1525);
-    $tar_economy_domestic_ferus = array (590,650,970,1050,1120,1650,2100,4000,6000,8000,10000);
+    $tar_economy_domestic_ferus = array (590,650,970,1050,1120,1650,2100,4000,6000,8000,10000,12000);
+    $tar_economy_domestic_shopbagno = array (600,0);
+    $tar_economy_domestic_isbtrading = array (0);
+    $tar_economy_domestic_cicliferrareis = array (1350,1500,4000,8000);
+    $tar_economy_domestic_eurocartuccia = array (490,0);
+    $tar_economy_domestic_magiedinatale = array (0,590,690,990,1290,1590,1990,2150,2990,3990,4990,5990);
+    $tar_economy_domestic_cartoniuova = array (0,550,635,1200,1590,2290);
+    $tar_economy_domestic_theshrimpbay = array (1299);
+    $tar_economy_domestic_eternalparquet = array (0,700,980,1110,1940,2520,2760,3000,6000,10000);
+    $tar_economy_domestic_eternalparquet_piumetrolineare = array (2200,2900,3180,3310,4140,4720,4960,5200,8200,12200);
+    $tar_economy_domestic_lacasadelbebe = array (700,0);
+    
+    $tar_economy_domestic_isbtrading_italia = array (945,1098,1372,1860,3599);
+    $tar_economy_domestic_isbtrading_campania = array (945,1083,1250,1769,2943);
+    $tar_economy_domestic_isbtrading_sicilia = array (1006,1174,1510,2501,4178);
+    $tar_economy_domestic_isbtrading_sardegna = array (961,1159,1540,2562,4209);
     
     $tar_economy_domestic =  array(0,290,519,835,1035,1305,2290,2490,2760,3745,3945,4215);
     $tar_standard_domestic = array(0,549,669,985,1185,1455,2440,2640,2910,3895,4095,4365);
@@ -285,24 +335,32 @@ function calculateshipping($DATA) {
     $indice_LookAtHome = array_search( $venditore_lookathome, $venditori);
     $indice_NelCuoreDellaSicilia = array_search( $venditore_nelcuoredellasicilia, $venditori);
     $indice_NonSoloAlimenti = array_search( $venditore_nonsoloalimenti, $venditori);
+    $indice_TipicieFood = array_search( $venditore_tipiciefood, $venditori);
     $indice_Kondorama = array_search( $venditore_kondorama, $venditori);
     $indice_Ferus = array_search( $venditore_ferus, $venditori);
+    $indice_PagnottaeSalute = array_search( $venditore_pagnottaesalute, $venditori);
+    $indice_ShopBagno = array_search( $venditore_shopbagno, $venditori);
+    $indice_Agbon = array_search( $venditore_agbon, $venditori);
+    $indice_IsbTrading = array_search( $venditore_isbtrading, $venditori);
+    $indice_CicliFerrareis = array_search( $venditore_cicliferrareis, $venditori);
+    $indice_Eurocartuccia = array_search( $venditore_eurocartuccia, $venditori);
+    $indice_MagiediNatale = array_search( $venditore_magiedinatale, $venditori);
+    $indice_CartoniUova = array_search( $venditore_cartoniuova, $venditori);
+    $indice_TheShrimpBay = array_search( $venditore_theshrimpbay, $venditori);
+    $indice_EternalParquet = array_search( $venditore_eternalparquet, $venditori);
+    $indice_DecorSpace = array_search( $venditore_decorspace, $venditori);
+    $indice_LaZappa = array_search( $venditore_lazappa, $venditori);
+    $indice_LaCasaDelBebe = array_search( $venditore_lacasadelbebe, $venditori);
     
 
-    $stacco ="Indice Bufalotti:";
-    print_r($stacco);
-    print_r($indiceBufalotti);
     if ($country == "IT") {
         foreach ($peso_per_venditore as $indice_iterpeso=>$p) {
             //trovo l'indice dell'array della spedizione
             $p = $p/1000;
             
             if ($indice_iterpeso === $indiceBufalotti) {
-                        $text1 = "Sono nell'iter else di bufalotti";
-                        print_r($text1);
                 if ($prezzo_per_venditore[$indiceBufalotti] >= 4990){
-                    $text1 = "Sono nel prezzo maggiore";
-                    print_r($text1);
+
                 } else {
                         $tariffa_economy_domestic += $tar_economy_domestic_bufalotti;
                         $tariffa_standard_domestic += $tar_economy_domestic_bufalotti;
@@ -310,20 +368,62 @@ function calculateshipping($DATA) {
 
                 }
             } elseif ($indice_iterpeso === $indiceBimboSmart) {
-                        $text1 = "Sono nell'iter else di Bimbosmart";
-                        print_r($text1);
+ 
                 if ($prezzo_per_venditore[$indiceBimboSmart] >= 5900){
-                    $text1 = "Sono nel prezzo maggiore spedizione gratuita";
-                    print_r($text1);
+
                 } else {
                         $tariffa_economy_domestic += $tar_economy_domestic_bimbosmart;
                         $tariffa_standard_domestic += $tar_economy_domestic_bimbosmart;
                         $tariffa_espressa_domestic += $tar_economy_domestic_bimbosmart;
 
                 }
+            } elseif ($indice_iterpeso === $indice_CartoniUova) {
+ 
+                if ($prezzo_per_venditore[$indice_CartoniUova] >= 0 and $prezzo_per_venditore[$indice_CartoniUova] < 2001) { $indice = 1; }
+                elseif ($prezzo_per_venditore[$indice_CartoniUova] >= 2001 and $prezzo_per_venditore[$indice_CartoniUova] < 3001) { $indice = 2; }
+                elseif ($prezzo_per_venditore[$indice_CartoniUova] >= 3001 and $prezzo_per_venditore[$indice_CartoniUova] < 5001) { $indice = 3; }
+                elseif ($prezzo_per_venditore[$indice_CartoniUova] >= 5001 and $prezzo_per_venditore[$indice_CartoniUova] < 7001) { $indice = 4; }
+                elseif ($prezzo_per_venditore[$indice_CartoniUova] >= 7001 and $prezzo_per_venditore[$indice_CartoniUova] < 10000) { $indice = 5; }
+                elseif ($prezzo_per_venditore[$indice_CartoniUova] >= 10000) { $indice = 0; }
+                if (isset($tar_economy_domestic_cartoniuova[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_cartoniuova[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_cartoniuova[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_cartoniuova[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_EternalParquet) {
+ 
+                // per peso reale devo sottrarre a p 0.35
+                $p = $p - 0.35;
+                
+                if ($p == 0) { $indice = 0; }
+                elseif ($p >= 0 and $p < 4) { $indice = 1; }
+                elseif ($p >= 4 and $p < 16) { $indice = 2; }
+                elseif ($p >= 16 and $p < 26) { $indice = 3; }
+                elseif ($p >= 26 and $p < 51) { $indice = 4; }
+                elseif ($p >= 51 and $p < 76) { $indice = 5; }
+                elseif ($p >= 76 and $p < 101) { $indice = 6; }
+                elseif ($p >= 101 and $p < 200) { $indice = 7; }
+                elseif ($p >= 200 and $p < 300) { $indice = 8; }
+                elseif ($p >= 300) { $indice = 9; }
+                if (isset($tar_economy_domestic_eternalparquet_piumetrolineare[$indice]) && $tagspeciali_per_venditore[$indice_EternalParquet] == 'spedizione_metro_lineare') {
+                    $tariffa_economy_domestic += $tar_economy_domestic_eternalparquet_piumetrolineare[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_eternalparquet_piumetrolineare[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_eternalparquet_piumetrolineare[$indice];
+                } else {
+                    $tariffa_economy_domestic += $tar_economy_domestic_eternalparquet[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_eternalparquet[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_eternalparquet[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_TheShrimpBay) {
+ 
+                $indice = 0;
+                if (isset($tar_economy_domestic_theshrimpbay[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_theshrimpbay[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_theshrimpbay[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_theshrimpbay[$indice];
+                }
             } elseif ($indice_iterpeso === $indiceMaxCasa) {
-                        $text1 = "Sono nell'iter else di Max Casa";
-                        print_r($text1);
+
                         
                 if ($prezzo_per_venditore[$indiceMaxCasa] >= 0 and $prezzo_per_venditore[$indiceMaxCasa] < 1991) { $indice = 0; }
                 elseif ($prezzo_per_venditore[$indiceMaxCasa] >= 1991 and $prezzo_per_venditore[$indiceMaxCasa] < 2991) { $indice = 1; }
@@ -335,8 +435,6 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_maxcasa[$indice];
                 }
             } elseif ($indice_iterpeso === $indiceProeon) {
-                        $text1 = "Sono nell'iter else di Proeon";
-                        print_r($text1);
                         
                 if ($prezzo_per_venditore[$indiceProeon] >= 0 and $prezzo_per_venditore[$indiceProeon] < 6001) { $indice = 0; }
                 else { $indice = 1; }
@@ -346,8 +444,6 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_proeon[$indice];
                 }
             } elseif ($indice_iterpeso === $indiceBottegaRisparmio) {
-                        $text1 = "Sono nell'iter else di La bottega del risparmio";
-                        print_r($text1);
                         
                 if ($prezzo_per_venditore[$indiceBottegaRisparmio] >= 0 and $prezzo_per_venditore[$indiceBottegaRisparmio] < 6001) { $indice = 0; }
                 else { $indice = 1; }
@@ -361,8 +457,6 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_bottegarisparmio[$indice] + $incremento_per_item;
                 }
             } elseif ($indice_iterpeso === $indice_SmartDecoHome) {
-                        $text1 = "Sono nell'iter else di Smartdecohome";
-                        print_r($text1);
                         
                 if ($prezzo_per_venditore[$indice_SmartDecoHome] >= 0 and $prezzo_per_venditore[$indice_SmartDecoHome] < 2990) { $indice = 0; }
                 else { $indice = 1; }
@@ -372,9 +466,27 @@ function calculateshipping($DATA) {
                     $tariffa_standard_domestic += $tar_economy_domestic_smartdecohome[$indice];
                     $tariffa_espressa_domestic += $tar_economy_domestic_smartdecohome[$indice];
                 }
+            } elseif ($indice_iterpeso === $indice_LaCasaDelBebe) {
+                        
+                if ($prezzo_per_venditore[$indice_LaCasaDelBebe] >= 0 and $prezzo_per_venditore[$indice_LaCasaDelBebe] < 4000) { $indice = 0; }
+                else { $indice = 1; }
+                
+                if (isset($tar_economy_domestic_lacasadelbebe[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_lacasadelbebe[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_lacasadelbebe[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_lacasadelbebe[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_Eurocartuccia) {
+                        
+                if ($prezzo_per_venditore[$indice_Eurocartuccia] >= 0 and $prezzo_per_venditore[$indice_Eurocartuccia] < 3500) { $indice = 0; }
+                else { $indice = 1; }
+                
+                if (isset($tar_economy_domestic_eurocartuccia[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_eurocartuccia[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_eurocartuccia[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_eurocartuccia[$indice];
+                }
             } elseif ($indice_iterpeso === $indice_Novilunio) {
-                        $text1 = "Sono nell'iter else di Novilunio";
-                        print_r($text1);
                         
                 if ($prezzo_per_venditore[$indice_Novilunio] >= 0 and $prezzo_per_venditore[$indice_Novilunio] < 4900) { $indice = 0; }
                 else { $indice = 1; }
@@ -385,8 +497,6 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_novilunio[$indice];
                 }
             } elseif ($indice_iterpeso === $indice_Innovamy) {
-                $text1 = "Sono nell'iter else di Innovamy";
-                print_r($text1);
                 $indice = 0;
                 
                 if (isset($tar_economy_domestic_innovamy[$indice])) {
@@ -395,8 +505,7 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_innovamy[$indice];
                 }
             } elseif ($indice_iterpeso === $indice_DogBauer) {
-                $text1 = "Sono nell'iter else di DogBauer";
-                print_r($text1);
+
                 $indice = 0;
                 
                 if (isset($tar_economy_domestic_dogbauer[$indice])) {
@@ -404,7 +513,7 @@ function calculateshipping($DATA) {
                     $tariffa_standard_domestic += $tar_economy_domestic_dogbauer[$indice];
                     $tariffa_espressa_domestic += $tar_economy_domestic_dogbauer[$indice];
                 }
-            }  elseif ($indice_iterpeso === $indiceFerramentaLombardi) {
+            } /* elseif ($indice_iterpeso === $indiceFerramentaLombardi) {
                 // per peso reale devo sottrarre a p 0.35
                 $p = $p - 0.35;
                 if ($p >= 0 and $p < 3) { $indice = 0; }
@@ -432,7 +541,7 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_ferramentalombardi[$indice];
                 }
                 
-            } elseif ($indice_iterpeso === $indiceTradeShop) {
+            }*/ elseif ($indice_iterpeso === $indiceTradeShop) {
                 // per peso reale devo sottrarre a p 0.35
                 $p = $p - 0.35;
                 if ($p >= 0 and $p < 0.5) { $indice = 0; }
@@ -460,7 +569,34 @@ function calculateshipping($DATA) {
                     $tariffa_standard_domestic += $tar_economy_domestic_tradeshop[$indice];
                     $tariffa_espressa_domestic += $tar_economy_domestic_tradeshop[$indice];
                 }
-            } elseif ($indice_iterpeso === $indice_NonSoloAlimenti) {
+            } elseif ($indice_iterpeso === $indice_MagiediNatale || $indice_iterpeso === $indice_DecorSpace || $indice_iterpeso === $indice_LaZappa) {
+                // per peso reale devo sottrarre a p 0.35
+                $p = $p - 0.35;
+                if ($p >= 0 and $p <= 0.1) { $indice = 0; }
+                elseif ($p > 0.1 and $p <= 3) { $indice = 1; }
+                elseif ($p > 3 and $p <= 6) { $indice = 2; }
+                elseif ($p > 6 and $p <= 10) { $indice = 3; }
+                elseif ($p > 10 and $p <= 20) { $indice = 4; }
+                elseif ($p > 20 and $p <= 30) { $indice = 5; }
+                elseif ($p > 30 and $p <= 50) { $indice = 6; }
+                elseif ($p > 50 and $p <= 100) { $indice = 7; }
+                elseif ($p > 100 and $p <= 150) { $indice = 8; }
+                elseif ($p > 150 and $p <= 200) { $indice = 9; }
+                elseif ($p > 200 and $p <= 250) { $indice = 10; }
+                elseif ($p > 250 and $p <= 300) { $indice = 11; }
+                elseif ($p > 300) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if ($prezzo_per_venditore[$indice_iterpeso] >= 24900) { $indice = 0; }
+                if (isset($tar_economy_domestic_magiedinatale[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_magiedinatale[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_magiedinatale[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_magiedinatale[$indice];
+                }
+            } elseif ($indice_iterpeso === $indiceFerramentaLombardi) {
                 // per peso reale devo sottrarre a p 0.35
                 if ($p >= 0 and $p < 2) { $indice = 0; }
                 elseif ($p >= 2 and $p < 3) { $indice = 1; }
@@ -484,7 +620,37 @@ function calculateshipping($DATA) {
                     $tariffa_standard_domestic += $tar_standard_domestic_new_fullprice[$indice];
                     $tariffa_espressa_domestic += $tar_espressa_domestic_new_fullprice[$indice];
                 }
-            } elseif ($indice_iterpeso === $indice_Kondorama) {
+            } elseif ($indice_iterpeso === $indice_NonSoloAlimenti or $indice_iterpeso === $indice_TipicieFood ) {
+                /*if ( $indice_iterpeso === $indice_PagnottaeSalute and $prezzo_per_venditore[$indice_PagnottaeSalute] > 5999) {
+                    $tariffa_economy_domestic += 0;
+                    $tariffa_standard_domestic += 0;
+                    $tariffa_espressa_domestic += 0;
+                } else {*/
+                    // per peso reale devo sottrarre a p 0.35
+                    if ($p >= 0 and $p < 2) { $indice = 0; }
+                    elseif ($p >= 2 and $p < 3) { $indice = 1; }
+                    elseif ($p >= 3 and $p < 5) { $indice = 2; }
+                    elseif ($p >= 5 and $p < 10) { $indice = 3; }
+                    elseif ($p >= 10 and $p < 15) { $indice = 4; }
+                    elseif ($p >= 15 and $p < 20) { $indice = 5; }
+                    elseif ($p >= 20 and $p < 25) { $indice = 6; }
+                    elseif ($p >= 25 and $p < 30) { $indice = 7; }
+                    elseif ($p >= 30 and $p < 60) { $indice = 8; }
+                    elseif ($p >= 60 and $p < 90) { $indice = 9; }
+                    elseif ($p >= 90 and $p < 120) { $indice = 10; }
+                    elseif ($p >=120) { 
+                        $tariffa_economy_domestic = false;
+                        $tariffa_standard_domestic = false;
+                        $tariffa_espressa_domestic = false;
+                        break;
+                    }
+                    if (isset($tar_economy_domestic_new_fullprice[$indice])) {
+                        $tariffa_economy_domestic += $tar_economy_domestic_new_fullprice[$indice];
+                        $tariffa_standard_domestic += $tar_standard_domestic_new_fullprice[$indice];
+                        $tariffa_espressa_domestic += $tar_espressa_domestic_new_fullprice[$indice];
+                    }
+                //}
+            } elseif ($indice_iterpeso === $indice_Kondorama or $indice_iterpeso === $indice_Agbon) {
                 // per peso reale devo sottrarre a p 0.35
                 if ($p >= 0 and $p < 3) { $indice = 0; }
                 elseif ($p >= 3 and $p < 10) { $indice = 1; }
@@ -500,6 +666,72 @@ function calculateshipping($DATA) {
                     $tariffa_economy_domestic += $tar_economy_domestic_kondorama[$indice];
                     $tariffa_standard_domestic += $tar_economy_domestic_kondorama[$indice];
                     $tariffa_espressa_domestic += $tar_economy_domestic_kondorama[$indice];
+                }
+            } elseif ($indice_iterpeso === $indice_IsbTrading) {
+                // per peso reale devo sottrarre a p 0.35
+                if ($p >= 0 and $p < 3) { $indice = 0; }
+                elseif ($p >= 3 and $p < 6) { $indice = 1; }
+                elseif ($p >= 6 and $p < 11) { $indice = 2; }
+                elseif ($p >= 11 and $p < 25) { $indice = 3; }
+                elseif ($p >= 25 and $p < 50) { $indice = 4; }
+                elseif ($p >=50) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                
+                if ($prezzo_per_venditore[$indice_IsbTrading] >= 0 and $prezzo_per_venditore[$indice_IsbTrading] < 15000) {
+                    $supplemento_assicurazione = 100; 
+                } elseif ( $prezzo_per_venditore[$indice_IsbTrading] >= 15000 ) {
+                    $supplemento_assicurazione = $prezzo_per_venditore[$indice_IsbTrading] * 0.005;
+                }
+                if ($p <= 1) {
+                    $supplemento_safety = 10;
+                } elseif ($p > 1) {
+                     $supplemento_safety = 10 + (($p - 1) * 1);
+                }
+                
+            	if ( $regione_destinazione == "SICILIA" ) {
+            	    $tariffa_economy_domestic += $tar_economy_domestic_isbtrading_sicilia[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_standard_domestic += $tar_economy_domestic_isbtrading_sicilia[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_espressa_domestic += $tar_economy_domestic_isbtrading_sicilia[$indice] + $supplemento_assicurazione + $supplemento_safety;
+            	} elseif ( $regione_destinazione == "CAMPANIA" ) {
+            	    $tariffa_economy_domestic += $tar_economy_domestic_isbtrading_campania[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_standard_domestic += $tar_economy_domestic_isbtrading_campania[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_espressa_domestic += $tar_economy_domestic_isbtrading_campania[$indice] + $supplemento_assicurazione + $supplemento_safety;
+            	} elseif ( $regione_destinazione == "SARDEGNA" ) {
+            	    $tariffa_economy_domestic += $tar_economy_domestic_isbtrading_sardegna[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_standard_domestic += $tar_economy_domestic_isbtrading_sardegna[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_espressa_domestic += $tar_economy_domestic_isbtrading_sardegna[$indice] + $supplemento_assicurazione + $supplemento_safety;
+            	} else {
+            	    $tariffa_economy_domestic += $tar_economy_domestic_isbtrading_italia[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_standard_domestic += $tar_economy_domestic_isbtrading_italia[$indice] + $supplemento_assicurazione + $supplemento_safety;
+        	        $tariffa_espressa_domestic += $tar_economy_domestic_isbtrading_italia[$indice] + $supplemento_assicurazione + $supplemento_safety;
+            	}
+
+                /*
+                $indice = 0;
+                if (isset($tar_economy_domestic_isbtrading[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_isbtrading[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_isbtrading[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_isbtrading[$indice];
+                }*/
+            } elseif ($indice_iterpeso === $indice_CicliFerrareis) {
+                if ($p >= 0 and $p < 5) { $indice = 0; }
+                elseif ($p >= 5 and $p < 10) { $indice = 1; }
+                elseif ($p >= 10 and $p < 15) { $indice = 2; }
+                elseif ($p >= 15 and $p < 30) { $indice = 3; }
+                elseif ($p >=30) { 
+                    $tariffa_economy_domestic = false;
+                    $tariffa_standard_domestic = false;
+                    $tariffa_espressa_domestic = false;
+                    break;
+                }
+                if (isset($tar_economy_domestic_cicliferrareis[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_cicliferrareis[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_cicliferrareis[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_cicliferrareis[$indice];
                 }
             } elseif ($indice_iterpeso === $indice_Ferus) {
                 // per peso reale devo sottrarre a p 0.35
@@ -539,11 +771,9 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_lemmastore[$indice];
                 }
             } elseif ($indice_iterpeso === $indice_LookAtHome) {
-                        $text1 = "Sono nell'iter else di LookAtHome";
-                        print_r($text1);
-                        
-                if ($prezzo_per_venditore[$indice_LookAtHome] >= 0 and $prezzo_per_venditore[$indice_LookAtHome] < 6000) { $indice = 0; }
-                elseif ($prezzo_per_venditore[$indice_LookAtHome] >= 6000) { $indice = 1; }
+
+                if ($prezzo_per_venditore[$indice_LookAtHome] >= 0 and $prezzo_per_venditore[$indice_LookAtHome] < 6500) { $indice = 0; }
+                elseif ($prezzo_per_venditore[$indice_LookAtHome] >= 6500) { $indice = 1; }
 
                 if (isset($tar_economy_domestic_lookathome[$indice])) {
                     $tariffa_economy_domestic += $tar_economy_domestic_lookathome[$indice];
@@ -551,8 +781,6 @@ function calculateshipping($DATA) {
                     $tariffa_espressa_domestic += $tar_economy_domestic_lookathome[$indice];
                 }
             } elseif ($indice_iterpeso === $indice_NelCuoreDellaSicilia) {
-                        $text1 = "Sono nell'iter else di Nel Cuore della sicilia";
-                        print_r($text1);
                         
                 if ($prezzo_per_venditore[$indice_NelCuoreDellaSicilia] >= 0 and $prezzo_per_venditore[$indice_NelCuoreDellaSicilia] < 9900) { $indice = 0; }
                 elseif ($prezzo_per_venditore[$indice_NelCuoreDellaSicilia] >= 9900) { $indice = 1; }
@@ -562,10 +790,19 @@ function calculateshipping($DATA) {
                     $tariffa_standard_domestic += $tar_economy_domestic_nelcuoredellasicilia[$indice];
                     $tariffa_espressa_domestic += $tar_economy_domestic_nelcuoredellasicilia[$indice];
                 }
+            } elseif ($indice_iterpeso === $indice_ShopBagno) {
+
+                        
+                if ($prezzo_per_venditore[$indice_ShopBagno] >= 0 and $prezzo_per_venditore[$indice_ShopBagno] < 4900) { $indice = 0; }
+                elseif ($prezzo_per_venditore[$indice_ShopBagno] >= 4900) { $indice = 1; }
+
+                if (isset($tar_economy_domestic_shopbagno[$indice])) {
+                    $tariffa_economy_domestic += $tar_economy_domestic_shopbagno[$indice];
+                    $tariffa_standard_domestic += $tar_economy_domestic_shopbagno[$indice];
+                    $tariffa_espressa_domestic += $tar_economy_domestic_shopbagno[$indice];
+                }
             } else {
                 
-                $text1 = "Non sono in un iter personalizzato";
-                print_r($text1);
                 if ($p >= 0 and $p < 1) { $indice = 0; }
                 elseif ($p >= 1 and $p < 3) { $indice = 1; }
                 elseif ($p >= 3 and $p < 5) { $indice = 2; }
@@ -653,20 +890,15 @@ function calculateshipping($DATA) {
  
     if ( $indiceBufalotti and count($venditori)>1) {
        
-        $text1 = "Più venditori di cui 1 bufalotti";
-        print_r($text1);
         $description_economy_domestic = "I prodotti di Bufalotti saranno spediti comunque con spedizione Express";
         $description_standard_domestic = "I prodotti di Bufalotti saranno spediti comunque con spedizione Express";
         
     } else if ( $venditori[0] == $venditore_bufalotti and count($venditori) == 1 ) {
     
-        $text1 = "Solo 1 venditore Bufalotti";
-        print_r($text1);
         $tariffa_economy_domestic = false;
         $tariffa_standard_domestic = false;
     }
 
-    print_r($tariffa_economy_domestic);
     
     if ($country == "IT") {
     	//la condizione  if ($tariffa_economy_domestic <> false) mi dice se c'è una tariffa per la spedizione
