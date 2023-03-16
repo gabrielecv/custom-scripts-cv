@@ -160,7 +160,7 @@ let variant_count = 0;
 $("#add_another_option_td").find("button").click( function() {
   function show_popup() {
     variant_count = variant_count  + 1;
-    replaceOption(variant_count);
+    //replaceOption(variant_count);
   }
 window.setTimeout( show_popup, 200 );
 });
@@ -169,7 +169,7 @@ $(document).on("click", "#remove_option_1", function(){
   variant_count  = variant_count  - 1;
 });
 
-replaceOption(variant_count);
+//replaceOption(variant_count);
 
 function replaceOption(variant_count ) {
   if (document.getElementById("option_name_" + variant_count ) !== null) {
