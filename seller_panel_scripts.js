@@ -8,10 +8,48 @@ if (document.getElementById('profile-btn')) {
 /*document.tidioIdentify = {
   name: venditore 
 };*/
+/*
 var chatScript = document.createElement('script');
 chatScript.src = 'https://static.zdassets.com/ekr/snippet.js?key=2ba9657d-dc80-49e8-9280-8caf18301b4e';
 chatScript.id = 'ze-snippet';
 document.body.appendChild(chatScript);
+*/
+
+
+var chatBtn = document.createElement('div');
+chatBtn.className = 'chat-button'; 
+chatBtn.onclick = function() {
+	zE('messenger', 'open');
+}
+chatBtn.innerText = 'Chat';
+	
+var counterSpan = document.createElement('span');
+counterSpan.className = 'chat-notification-counter';
+counterSpan.id = 'chat-notification-counter';
+counterSpan.innerText = '0'; 
+
+document.body.appendChild(chatBtn);
+document.body.appendChild(counterSpan);
+	
+let chatScript = document.createElement("script");
+	chatScript.setAttribute("src", "https://static.zdassets.com/ekr/snippet.js?key=2ba9657d-dc80-49e8-9280-8caf18301b4e");
+	chatScript.setAttribute("id", "ze-snippet");
+	chatScript.defer = true;
+	chatScript.onload = function() {
+		console.log("caricato ze")
+		zE("messenger:on", "unreadMessages", function (count) {
+			var counter = document.getElementById("chat-notification-counter");
+			counter.innerHTML = count;
+			if (count > 0) {
+				counter.style.display = "block";
+			} else {
+				counter.style.display = "none";
+			}
+		})
+}
+document.body.appendChild(chatScript);
+
+
 
 var PoppinsFont = document.createElement('link');
 PoppinsFont.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap';
