@@ -9,7 +9,7 @@ if (document.getElementById('profile-btn')) {
   name: venditore 
 };*/
 var chatScript = document.createElement('script');
-chatScript.src = 'https://static.zdassets.com/ekr/snippet.js?key=8de440a1-1c65-4b81-867c-3f024c4851b3';
+chatScript.src = 'https://static.zdassets.com/ekr/snippet.js?key=2ba9657d-dc80-49e8-9280-8caf18301b4e';
 chatScript.id = 'ze-snippet';
 document.body.appendChild(chatScript);
 
