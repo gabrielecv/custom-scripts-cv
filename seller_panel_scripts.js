@@ -176,8 +176,8 @@ if (window.location.href.indexOf("index.php?p=my_account") != -1){
   };
 }
 if (window.location.href.indexOf("/index.php?p=add_product") != -1){
-document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[2].getElementsByTagName('label')[0].innerHTML = "CAMPI DA RIEMPIRE SE SI VUOLE EVIDENZIARE IL PREZZO UNITARIO<br>Unità di misura della quantità di prodotto Chilo/Litro/ Singole unità... - SELEZIONARE CT SE L'UNITA DI MISURA E' la Singola unità";
-document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[3].getElementsByTagName('label')[0].innerHTML = "Quantita' di prodotto inclusa nell'inserzione";
+document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[4].getElementsByTagName('label')[0].innerHTML = "CAMPI DA RIEMPIRE SE SI VUOLE EVIDENZIARE IL PREZZO UNITARIO<br>Unità di misura della quantità di prodotto Chilo/Litro/ Singole unità... - SELEZIONARE CT SE L'UNITA DI MISURA E' la Singola unità";
+document.getElementById("cus_field").getElementsByClassName("margin-topbtm-10")[6].getElementsByTagName('label')[0].innerHTML = "Quantita' di prodotto inclusa nell'inserzione";
 var fieldtitle = document.querySelectorAll("[id='product_name_div']");
 var contacaratteri='<div style="margin-top:10px;">Conteggio caratteri: <span id="conteggiocaratterititolo">0<\/span>\/200 - <span id="suggerimentolunghezzatitolo" style="color:red">Titolo Troppo Breve!<\/span>          <a href="https://sell.commerciovirtuoso.it/come-scrivere-il-nome-perfetto-per-il-tuo-prodotto/" target="_blank">Guida: scrivere il titolo perfetto </a><\/div>';
 fieldtitle[3].innerHTML+=contacaratteri;
