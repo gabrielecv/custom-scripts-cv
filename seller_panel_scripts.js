@@ -190,8 +190,8 @@ if (document.getElementById('weight') !== null) {
   document.getElementById('weight').setAttribute( "onInput", "changecomma(this)" );
   document.getElementById('price').setAttribute( "onInput", "changecomma(this)" );
   document.getElementById('comp_price').setAttribute( "onInput", "changecomma(this)" );
-  document.getElementById('product_name').setAttribute( "onInput", "tolowecase(this);tocountchars(this)" );
-  document.getElementsByName('cus_brand')[0].setAttribute( "onInput", "tolowecase(this)" );
+  document.getElementById('product_name').setAttribute( "onInput", "tocountchars(this)" );
+  document.getElementsByName('cus_brand')[0].setAttribute( "onInput", "capitalizeEachWord(this)" );
 }
 
 let variant_count = 0;
@@ -251,3 +251,10 @@ if (contatore_lunghezzacaratteri > 150){
 function tolowecase(e){
   e.value = e.value.charAt(0).toUpperCase() + e.value.slice(1).toLowerCase();
 }}
+function capitalizeEachWord(e) {
+  e.value = e.value
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
