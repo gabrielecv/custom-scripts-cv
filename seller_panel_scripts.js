@@ -57,13 +57,17 @@ if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
 	});
 }
 
-document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/category/guide/" title="guide"><i class="fa fa-book" aria-hidden="true"></i>Guide</a></li>';
-document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/domande-frequenti/" title="domande frequenti"><i class="fa fa-question-circle" aria-hidden="true"></i>Domande frequenti</a></li>';
- document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="tel:+390287176931" title="chiama"><i class="fa fa-phone" aria-hidden="true"></i>+39 02 8717 6931</a></li>';
+/*-----Aggiungere link a menu -----*/
+document.getElementById('admin-header-div-5').innerHTML += '<a href="https://sell.commerciovirtuoso.it/category/guide/" title="guide">Guide</a>';
+document.getElementById('admin-header-div-5').innerHTML += '<a href="https://sell.commerciovirtuoso.it/domande-frequenti/" title="domande frequenti">Domande frequenti</a>';
+document.getElementById('admin-header-div-5').innerHTML += '<a href="tel:+390287176931" title="chiama">+39 02 8717 6931</a>';
+
+/*-----Aggiungi nuovo prodotto Pulsante in pagina prodotto -----*/
 if (window.location.href.indexOf("/index.php?p=add_product&pid=") != -1){
  document.getElementById('page-heading').innerHTML += '<a href="index.php?p=add_product"><button type="button" class="pull-right mp-theme-background" style="padding: 15px 10px;border-radius: 10px;color: #333333;font-weight:600;border:none;">✚ Aggiungi nuovo prodotto</button></a>';
 }
 
+/*-----Guide nelle pagine dei vari connettori -----*/
 if (window.location.href.indexOf("/index.php?p=connector_configs&platform_id=2") != -1){
  document.getElementById('page-heading').innerHTML += "<a style='color: black;background: orange;margin-top: 10px;display: block;padding: 10px;font-size: 16px;width: fit-content;font-weight: 800;' href='https://sell.commerciovirtuoso.it/come-integrare-woocommerce-al-marketplace-commerciovirtuoso-it/' target='_blank'>Leggi la Guida di integrazione --></a> <span> oppure chiamaci al +39 02 8717 6931</span>";
 }
