@@ -1,21 +1,4 @@
-if (document.getElementById('profile-btn')) {
-  var storelink = document.getElementById('profile-btn');
-  var venditore = storelink.href.split("/").pop();
-  var venditore = "VENDITORE-" + venditore;
-} else { 
-  var venditore = "VENDITORE-Non-loggato";
-}
-/*document.tidioIdentify = {
-  name: venditore 
-};*/
-/*
-var chatScript = document.createElement('script');
-chatScript.src = 'https://static.zdassets.com/ekr/snippet.js?key=2ba9657d-dc80-49e8-9280-8caf18301b4e';
-chatScript.id = 'ze-snippet';
-document.body.appendChild(chatScript);
-*/
-
-
+/*-----chat button-----*/
 var chatBtn = document.createElement('div');
 chatBtn.className = 'chat-button'; 
 chatBtn.onclick = function() {
@@ -49,45 +32,32 @@ let chatScript = document.createElement("script");
 }
 document.body.appendChild(chatScript);
 
-
+/*-----Font loading-----*/
 
 var PoppinsFont = document.createElement('link');
 PoppinsFont.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap';
 PoppinsFont.rel = 'stylesheet';
 document.body.appendChild(PoppinsFont);
 
+/*-----Disabilita campo nome negozio-----*/
 if (document.getElementById('store_name') !== null) {
   document.getElementById('store_name').readOnly= true;
   document.getElementById('store_name').style.cursor= "not-allowed";
 }
 
+/*-----Membership plan modifica stile-----*/
 if (window.location.href.indexOf("/index.php?p=membership_plans") != -1){
-  document.getElementsByClassName("mp-margin-top-50")[0].classList.add("membership-plans-container");
+	document.querySelectorAll('.border.rounded-lg.h-\\[450px\\]').forEach(card => {
+	  card.classList.remove('h-[450px]');
+	});
+	
+	// 2. Rimuove h-36 e overflow-y-auto dal contenuto interno
+	document.querySelectorAll('.h-36.overflow-y-auto').forEach(el => {
+	  el.classList.remove('h-36', 'overflow-y-auto');
+	});
 }
 
-/*if (window.location.href.indexOf("/index.php?p=login") != -1){
-  document.getElementById('header').classList.add("margin-top-85");
-  document.getElementById('customized_icon').classList = ("hidden");
-  var content_wrapp = document.getElementById('login-template');
-  content_wrapp.getElementsByTagName("div")[0].classList = ("hidden");
-  content_wrapp.getElementsByTagName("div")[1].classList = ("hidden");
-  var twosiderow = content_wrapp.getElementsByTagName("div")[2];
-  twosiderow.getElementsByTagName("div")[0].classList = ("hidden");
-  twosiderow.getElementsByTagName("div")[1].classList = ("col-lg-5 col-md-5 left-block-login");
-  twosiderow.getElementsByClassName("col-lg-5")[1].classList = ("col-lg-7 col-md-7 right-block-login");
-  console.log(document.getElementById('login_form_div'));
-  document.getElementById('login_form_div').classList.remove("card");
-  document.getElementsByClassName("footer")[0].classList = ("footer text-left hidden");
-  document.getElementById('login_form_div').getElementsByTagName("h4")[0].classList.remove("mp-margin-top-50")
-}
-if (window.location.href.indexOf("/index.php?p=signup") != -1){
-  document.getElementById('header').classList.add("margin-top-85");
-  document.getElementById('customized_icon').classList = ("hidden");
-  document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
-  document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
-  document.getElementsByClassName("mp-margin-top-50")[0].classList.remove("mp-margin-top-50");
-}*/
- document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/category/guide/" title="guide"><i class="fa fa-book" aria-hidden="true"></i>Guide</a></li>';
+document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/category/guide/" title="guide"><i class="fa fa-book" aria-hidden="true"></i>Guide</a></li>';
 document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="https://sell.commerciovirtuoso.it/domande-frequenti/" title="domande frequenti"><i class="fa fa-question-circle" aria-hidden="true"></i>Domande frequenti</a></li>';
  document.getElementById('button-navbar').getElementsByTagName("ul")[0].innerHTML += '<li class="text-right"><a href="tel:+390287176931" title="chiama"><i class="fa fa-phone" aria-hidden="true"></i>+39 02 8717 6931</a></li>';
 if (window.location.href.indexOf("/index.php?p=add_product&pid=") != -1){
